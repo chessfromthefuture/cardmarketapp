@@ -71,6 +71,9 @@ function App() {
     }
   }
 
+  // Get API base URL from environment or use relative path
+  const API_BASE = import.meta.env.VITE_API_URL || '';
+
   async function handleIdentify() {
     if (!selectedFile) return;
     setResult({ loading: true });
@@ -78,7 +81,7 @@ function App() {
     try {
       const formData = new FormData();
       formData.append("file", selectedFile);
-      const res = await fetch("/api/identify", { method: "POST", body: formData });
+      const res = await fetch(`${API_BASE}/api/identify`, { method: "POST", body: formData });
       const data = await res.json();
       const best = data && data.cm_idProduct ? data : quickGuess || data;
       setResult({ ...best, language: 1, condition: "Near Mint", notes: "" });
@@ -177,7 +180,7 @@ function App() {
       if (adv.rarity) params.set('rarity', adv.rarity);
       if (adv.limit) params.set('limit', String(adv.limit));
       if (adv.offset) params.set('offset', String(adv.offset));
-      const res = await fetch(`/api/search?${params.toString()}`);
+      const res = await fetch(`${API_BASE}/api/search?${params.toString()}`);
       const data = await res.json();
       setRemoteResults(Array.isArray(data.results) ? data.results : []);
     } catch (e) {
@@ -200,12 +203,12 @@ function App() {
   const [importUrl, setImportUrl] = useState("");
   const [activeTab, setActiveTab] = useState("search");
   async function loadStats() {
-    const res = await fetch('/api/stats');
+    const res = await fetch(`${API_BASE}/api/stats`);
     const data = await res.json();
     setStats(data);
   }
   async function triggerRefresh() {
-    await fetch('/api/refresh-onepiece', { method: 'POST' });
+    await fetch(`${API_BASE}/api/refresh-onepiece`, { method: 'POST' });
     await loadStats();
   }
   async function importJson(e) {
@@ -215,7 +218,7 @@ function App() {
     try {
       const fd = new FormData();
       fd.append('file', file);
-      await fetch('/api/import-onepiece', { method: 'POST', body: fd });
+      await fetch(`${API_BASE}/api/import-onepiece`, { method: 'POST', body: fd });
       await loadStats();
     } finally {
       setImporting(false);
@@ -226,7 +229,7 @@ function App() {
     if (!importUrl) return;
     setImporting(true);
     try {
-      await fetch('/api/import-onepiece-url', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ url: importUrl }) });
+      await fetch(`${API_BASE}/api/import-onepiece-url`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ url: importUrl }) });
       await loadStats();
     } finally {
       setImporting(false);
@@ -248,25 +251,25 @@ function App() {
       {/* Navigation Tabs */}
       <div className="tool-navigation">
         <div className="nav-tabs">
-          <button 
+          <button
             className={`nav-tab ${activeTab === 'search' ? 'active' : ''}`}
             onClick={() => setActiveTab('search')}
           >
             🔍 Search Cards
           </button>
-          <button 
+          <button
             className={`nav-tab ${activeTab === 'upload' ? 'active' : ''}`}
             onClick={() => setActiveTab('upload')}
           >
             📸 Upload & Identify
           </button>
-          <button 
+          <button
             className={`nav-tab ${activeTab === 'inventory' ? 'active' : ''}`}
             onClick={() => setActiveTab('inventory')}
           >
             📚 My Collection
           </button>
-          <button 
+          <button
             className={`nav-tab ${activeTab === 'admin' ? 'active' : ''}`}
             onClick={() => setActiveTab('admin')}
           >
@@ -278,7 +281,7 @@ function App() {
       {/* Search Tab */}
       {activeTab === 'search' && (
         <div className="tool-section">
-          <div className="search-section">
+          <div className="search-section nami-navigation">
             <h3>🔍 Search One Piece Cards</h3>
             <div className="search-controls">
               <input
@@ -287,49 +290,49 @@ function App() {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search by code (e.g., OP01-025) or name (e.g., Zoro)"
               />
-              <button 
-                className="btn-primary" 
-                disabled={!searchQuery || searchLoading} 
+              <button
+                className="btn-primary"
+                disabled={!searchQuery || searchLoading}
                 onClick={() => fetchSearch(searchQuery)}
               >
                 {searchLoading ? <span className="loading-spinner">Searching...</span> : '🔍 Search All'}
               </button>
             </div>
             <div className="advanced-search">
-              <input 
-                value={adv.name} 
-                onChange={e => setAdv({ ...adv, name: e.target.value })} 
-                placeholder="Character Name" 
+              <input
+                value={adv.name}
+                onChange={e => setAdv({ ...adv, name: e.target.value })}
+                placeholder="Character Name"
               />
-              <input 
-                value={adv.code} 
-                onChange={e => setAdv({ ...adv, code: e.target.value })} 
-                placeholder="Card Code" 
+              <input
+                value={adv.code}
+                onChange={e => setAdv({ ...adv, code: e.target.value })}
+                placeholder="Card Code"
               />
-              <input 
-                value={adv.set} 
-                onChange={e => setAdv({ ...adv, set: e.target.value })} 
-                placeholder="Set/Expansion" 
+              <input
+                value={adv.set}
+                onChange={e => setAdv({ ...adv, set: e.target.value })}
+                placeholder="Set/Expansion"
               />
-              <input 
-                value={adv.rarity} 
-                onChange={e => setAdv({ ...adv, rarity: e.target.value })} 
-                placeholder="Rarity (SR, LDR, etc.)" 
+              <input
+                value={adv.rarity}
+                onChange={e => setAdv({ ...adv, rarity: e.target.value })}
+                placeholder="Rarity (SR, LDR, etc.)"
               />
-              <input 
-                type="number" 
-                min={1} 
-                max={100} 
-                value={adv.limit} 
-                onChange={e => setAdv({ ...adv, limit: Number(e.target.value) })} 
-                placeholder="Limit" 
+              <input
+                type="number"
+                min={1}
+                max={100}
+                value={adv.limit}
+                onChange={e => setAdv({ ...adv, limit: Number(e.target.value) })}
+                placeholder="Limit"
               />
-              <input 
-                type="number" 
-                min={0} 
-                value={adv.offset} 
-                onChange={e => setAdv({ ...adv, offset: Number(e.target.value) })} 
-                placeholder="Offset" 
+              <input
+                type="number"
+                min={0}
+                value={adv.offset}
+                onChange={e => setAdv({ ...adv, offset: Number(e.target.value) })}
+                placeholder="Offset"
               />
               <button className="btn-secondary" onClick={() => fetchSearch("")}>
                 🔎 Advanced Search
@@ -359,8 +362,8 @@ function App() {
               </div>
             )}
           </div>
-          
-          <div className="sample-cards">
+
+          <div className="sample-cards straw-hat-crew">
             <h3>🎴 Quick Samples</h3>
             <div className="sample-buttons">
               <button className="btn-primary" onClick={() => handleLoadSample(0)}>
@@ -380,7 +383,7 @@ function App() {
       {/* Upload Tab */}
       {activeTab === 'upload' && (
         <div className="tool-section">
-          <div className="upload-section">
+          <div className="upload-section zoro-swords">
             <h3>📸 Upload Card Image</h3>
             <div className="file-input-wrapper">
               <input
@@ -402,9 +405,9 @@ function App() {
                 />
               </div>
             )}
-            <button 
-              className="btn-primary btn-lg" 
-              onClick={handleIdentify} 
+            <button
+              className="btn-primary btn-lg"
+              onClick={handleIdentify}
               disabled={!selectedFile || (result && result.loading)}
             >
               {result && result.loading ? (
@@ -420,7 +423,7 @@ function App() {
       {/* Inventory Tab */}
       {activeTab === 'inventory' && (
         <div className="tool-section">
-          <div className="inventory-section">
+          <div className="inventory-section chopper-medical">
             <h3>📚 My Collection ({inventory.length})</h3>
             {inventory.length === 0 ? (
               <div className="inventory-empty">
@@ -461,9 +464,9 @@ function App() {
               </div>
             )}
             <div className="inventory-actions">
-              <button 
-                className="btn-primary treasure-glow" 
-                onClick={handleExportCSV} 
+              <button
+                className="btn-primary treasure-glow"
+                onClick={handleExportCSV}
                 disabled={inventory.length === 0}
               >
                 📊 Export CSV
@@ -485,7 +488,7 @@ function App() {
       {/* Admin Tab */}
       {activeTab === 'admin' && (
         <div className="tool-section">
-          <div className="admin-panel">
+          <div className="admin-panel sanji-cooking">
             <h3>⚙️ Admin Controls</h3>
             <div className="admin-controls">
               <button className="btn-primary" onClick={loadStats}>
@@ -499,16 +502,16 @@ function App() {
                 <input type="file" accept="application/json" onChange={importJson} className="file-input" />
               </label>
               <div className="d-flex gap-2 align-items-center">
-                <input 
-                  value={importUrl} 
-                  onChange={e => setImportUrl(e.target.value)} 
-                  placeholder="https://.../onepiece.json" 
+                <input
+                  value={importUrl}
+                  onChange={e => setImportUrl(e.target.value)}
+                  placeholder="https://.../onepiece.json"
                   className="search-input"
                   style={{ width: '260px' }}
                 />
-                <button 
-                  className="btn-success" 
-                  onClick={importFromUrl} 
+                <button
+                  className="btn-success"
+                  onClick={importFromUrl}
                   disabled={importing || !importUrl}
                 >
                   {importing ? '⏳' : '🚀'} Go
@@ -525,205 +528,158 @@ function App() {
         </div>
       )}
 
+      {/* Card Detection Modal - Shows when result is available */}
       {result && !result.loading && (
-        <div className="card-detection">
-          {result.error ? (
-            <div className="error-message">
-              ❌ Error: {result.error}
-            </div>
-          ) : (
-            <>
+        <div className="card-detection-modal">
+          <div className="modal-overlay" onClick={() => setResult(null)}></div>
+          <div className="modal-content">
+            <div className="modal-header">
               <h3>🎯 Detected Card</h3>
-              <div className="detection-form">
-                <div className="form-group">
-                  <label>Character Name</label>
-                  <input
-                    value={result.name || ""}
-                    onChange={(e) => handleFieldChange("name", e.target.value)}
-                    placeholder="Enter character name"
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Card Code</label>
-                  <input
-                    value={result.card_code || ""}
-                    onChange={(e) => handleFieldChange("card_code", e.target.value)}
-                    placeholder="e.g., OP01-001"
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Set/Expansion</label>
-                  <input
-                    value={result.cm_expansion || ""}
-                    onChange={(e) => handleFieldChange("cm_expansion", e.target.value)}
-                    placeholder="e.g., ROMANCE DAWN"
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Cardmarket ID</label>
-                  <input
-                    value={result.cm_idProduct || ""}
-                    readOnly
-                    placeholder="Auto-generated"
-                  />
-                </div>
-                <div className="form-row">
-                  <div className="form-group">
-                    <label>Language</label>
-                    <select
-                      value={result.language}
-                      onChange={(e) => handleFieldChange("language", e.target.value)}
-                    >
-                      {languages.map((l) => (
-                        <option key={l.id} value={l.id}>
-                          {l.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="form-group">
-                    <label>Condition</label>
-                    <select
-                      value={result.condition}
-                      onChange={(e) => handleFieldChange("condition", e.target.value)}
-                    >
-                      {conditions.map((c) => (
-                        <option key={c} value={c}>
-                          {c}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-                <div className="form-group">
-                  <label>Notes</label>
-                  <input
-                    value={result.notes || ""}
-                    onChange={(e) => handleFieldChange("notes", e.target.value)}
-                    placeholder="Add any additional notes..."
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Confidence Score</label>
-                  <input
-                    value={result.confidence}
-                    readOnly
-                    placeholder="Detection confidence"
-                  />
-                </div>
-                {result.match_score !== undefined && (
-                  <div className="form-group">
-                    <label>Match Score</label>
-                    <input
-                      value={`${Math.round(result.match_score * 100)}%`}
-                      readOnly
-                      placeholder="Match percentage"
-                    />
-                  </div>
-                )}
-                {result.extracted_code && (
-                  <div className="form-group">
-                    <label>Extracted Code</label>
-                    <input
-                      value={result.extracted_code}
-                      readOnly
-                      placeholder="Code from OCR"
-                    />
-                  </div>
-                )}
-                {result.extracted_name && (
-                  <div className="form-group">
-                    <label>Extracted Name</label>
-                    <input
-                      value={result.extracted_name}
-                      readOnly
-                      placeholder="Name from OCR"
-                    />
-                  </div>
-                )}
-                <div className="form-group">
-                  <label>Raw OCR Text</label>
-                  <textarea
-                    value={result.raw_text || ""}
-                    readOnly
-                    rows={3}
-                    placeholder="Raw text detected from image"
-                  />
-                </div>
+              <button className="modal-close" onClick={() => setResult(null)}>×</button>
+            </div>
+            {result.error ? (
+              <div className="error-message">
+                ❌ Error: {result.error}
               </div>
-              <div className="card-footer">
-                <button
-                  className="btn-success btn-lg"
-                  onClick={handleSave}
-                  disabled={saving || !result.cm_idProduct}
-                >
-                  {saving ? <span className="loading-spinner">Saving...</span> : '💾 Save to Inventory'}
-                </button>
-              </div>
-            </>
-          )}
+            ) : (
+              <>
+                <div className="detection-form">
+                  <div className="form-group">
+                    <label>Character Name</label>
+                    <input
+                      value={result.name || ""}
+                      onChange={(e) => handleFieldChange("name", e.target.value)}
+                      placeholder="Enter character name"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Card Code</label>
+                    <input
+                      value={result.card_code || ""}
+                      onChange={(e) => handleFieldChange("card_code", e.target.value)}
+                      placeholder="e.g., OP01-001"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Set/Expansion</label>
+                    <input
+                      value={result.cm_expansion || ""}
+                      onChange={(e) => handleFieldChange("cm_expansion", e.target.value)}
+                      placeholder="e.g., ROMANCE DAWN"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Cardmarket ID</label>
+                    <input
+                      value={result.cm_idProduct || ""}
+                      readOnly
+                      placeholder="Auto-generated"
+                    />
+                  </div>
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label>Language</label>
+                      <select
+                        value={result.language}
+                        onChange={(e) => handleFieldChange("language", e.target.value)}
+                      >
+                        {languages.map((l) => (
+                          <option key={l.id} value={l.id}>
+                            {l.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="form-group">
+                      <label>Condition</label>
+                      <select
+                        value={result.condition}
+                        onChange={(e) => handleFieldChange("condition", e.target.value)}
+                      >
+                        {conditions.map((c) => (
+                          <option key={c} value={c}>
+                            {c}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                  <div className="form-group">
+                    <label>Notes</label>
+                    <input
+                      value={result.notes || ""}
+                      onChange={(e) => handleFieldChange("notes", e.target.value)}
+                      placeholder="Add any additional notes..."
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Confidence Score</label>
+                    <input
+                      value={result.confidence}
+                      readOnly
+                      placeholder="Detection confidence"
+                    />
+                  </div>
+                  {result.match_score !== undefined && (
+                    <div className="form-group">
+                      <label>Match Score</label>
+                      <input
+                        value={`${Math.round(result.match_score * 100)}%`}
+                        readOnly
+                        placeholder="Match percentage"
+                      />
+                    </div>
+                  )}
+                  {result.extracted_code && (
+                    <div className="form-group">
+                      <label>Extracted Code</label>
+                      <input
+                        value={result.extracted_code}
+                        readOnly
+                        placeholder="Code from OCR"
+                      />
+                    </div>
+                  )}
+                  {result.extracted_name && (
+                    <div className="form-group">
+                      <label>Extracted Name</label>
+                      <input
+                        value={result.extracted_name}
+                        readOnly
+                        placeholder="Name from OCR"
+                      />
+                    </div>
+                  )}
+                  <div className="form-group">
+                    <label>Raw OCR Text</label>
+                    <textarea
+                      value={result.raw_text || ""}
+                      readOnly
+                      rows={3}
+                      placeholder="Raw text detected from image"
+                    />
+                  </div>
+                </div>
+                <div className="modal-footer">
+                  <button
+                    className="btn-success btn-lg"
+                    onClick={handleSave}
+                    disabled={saving || !result.cm_idProduct}
+                  >
+                    {saving ? <span className="loading-spinner">Saving...</span> : '💾 Save to Inventory'}
+                  </button>
+                  <button
+                    className="btn-secondary"
+                    onClick={() => setResult(null)}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
         </div>
       )}
-
-      <div className="inventory-section">
-        <h3>📚 Inventory ({inventory.length})</h3>
-        {inventory.length === 0 ? (
-          <div className="inventory-empty">
-            <p>🏴‍☠️ No cards saved yet. Start by uploading an image or searching for cards!</p>
-          </div>
-        ) : (
-          <div className="inventory-table">
-            <table>
-              <thead>
-                <tr>
-                  <th>Character</th>
-                  <th>Code</th>
-                  <th>Set</th>
-                  <th>Language</th>
-                  <th>Condition</th>
-                  <th>Cardmarket ID</th>
-                  <th>Notes</th>
-                  <th>Confidence</th>
-                  <th>Added</th>
-                </tr>
-              </thead>
-              <tbody>
-                {inventory.map((e) => (
-                  <tr key={e.id}>
-                    <td className="straw-hat">{e.name}</td>
-                    <td className="pirate-flag">{e.card_code}</td>
-                    <td>{e.set_code}</td>
-                    <td>{e.language}</td>
-                    <td>{e.condition}</td>
-                    <td>{e.cm_idProduct}</td>
-                    <td>{e.notes}</td>
-                    <td>{e.matched_confidence}</td>
-                    <td>{e.timestamp.slice(0, 19).replace("T", " ")}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-        <div className="inventory-actions">
-          <button
-            className="btn-primary treasure-glow"
-            onClick={handleExportCSV}
-            disabled={inventory.length === 0}
-          >
-            📊 Export CSV
-          </button>
-          {csvUrl && (
-            <a
-              href={csvUrl}
-              download={`card_inventory_${Date.now()}.csv`}
-              className="btn-secondary flag-wave"
-            >
-              💾 Download CSV
-            </a>
-          )}
-        </div>
-      </div>
       <div className="card" style={{ textAlign: 'center', marginTop: '2rem' }}>
         <div className="treasure-chest">
           <h4 className="ocean-wave">💡 Pro Tips</h4>

@@ -37,7 +37,7 @@ class CardNumberRecognizer {
   // Extract card number from image filename or text
   extractCardNumber(input) {
     if (!input) return null;
-    
+
     // Try direct pattern matching first
     const match = input.match(OCR_CONFIG.cardNumberPattern);
     if (match) {
@@ -49,12 +49,12 @@ class CardNumberRecognizer {
         isValid: true
       };
     }
-    
+
     // Try to clean and normalize the input
     const cleaned = input.toString().toUpperCase()
       .replace(/[^A-Z0-9-]/g, '') // Remove non-alphanumeric except hyphens
       .replace(/\s+/g, ''); // Remove spaces
-    
+
     const cleanedMatch = cleaned.match(OCR_CONFIG.cardNumberPattern);
     if (cleanedMatch) {
       return {
@@ -65,7 +65,7 @@ class CardNumberRecognizer {
         isValid: true
       };
     }
-    
+
     return {
       fullCode: input,
       isValid: false,
@@ -80,7 +80,7 @@ class CardNumberRecognizer {
       return { found: false, error: extracted.error };
     }
 
-    const card = this.cardDatabase.find(c => 
+    const card = this.cardDatabase.find(c =>
       c.card_code.toUpperCase() === extracted.fullCode
     );
 
@@ -95,7 +95,7 @@ class CardNumberRecognizer {
   // In a real implementation, this would use actual OCR libraries like Tesseract
   async processImageForCardNumber(imagePath) {
     console.log(`Processing image: ${imagePath}`);
-    
+
     // Simulate image processing steps
     const steps = [
       'Loading image...',
@@ -105,17 +105,17 @@ class CardNumberRecognizer {
       'Running OCR recognition...',
       'Validating card number format...'
     ];
-    
+
     for (const step of steps) {
       console.log(`  ${step}`);
       // Simulate processing time
       await new Promise(resolve => setTimeout(resolve, 100));
     }
-    
+
     // Extract card code from filename as fallback
     const filename = path.basename(imagePath, path.extname(imagePath));
     const cardCode = this.extractCardNumber(filename);
-    
+
     return {
       success: cardCode.isValid,
       cardCode: cardCode.fullCode,
@@ -129,15 +129,15 @@ class CardNumberRecognizer {
   async processBatch(images) {
     console.log(`Processing ${images.length} images...`);
     const results = [];
-    
+
     for (let i = 0; i < images.length; i++) {
       const image = images[i];
       console.log(`\nProcessing ${i + 1}/${images.length}: ${image}`);
-      
+
       try {
         const result = await this.processImageForCardNumber(image);
         results.push(result);
-        
+
         if (result.success) {
           const cardMatch = this.findCardByCode(result.cardCode);
           if (cardMatch.found) {
@@ -157,7 +157,7 @@ class CardNumberRecognizer {
         });
       }
     }
-    
+
     return results;
   }
 
@@ -168,10 +168,10 @@ class CardNumberRecognizer {
       classes: ['card_number'],
       annotations: []
     };
-    
+
     images.forEach((image, index) => {
       const cardCode = this.extractCardNumber(path.basename(image, path.extname(image)));
-      
+
       if (cardCode.isValid) {
         trainingData.annotations.push({
           image: image,
@@ -186,7 +186,7 @@ class CardNumberRecognizer {
         });
       }
     });
-    
+
     return trainingData;
   }
 
@@ -283,27 +283,27 @@ class TrainingDataPreparer {
 if (require.main === module) {
   const recognizer = new CardNumberRecognizer();
   const preparer = new TrainingDataPreparer();
-  
+
   console.log('One Piece TCG Card Number Recognition System');
   console.log('============================================\n');
-  
+
   // Test card number recognition
   const testCodes = ['OP01-001', 'ST01-002', 'OP02-121', 'invalid-code', 'OP01 001'];
-  
+
   console.log('Testing card number recognition:');
   testCodes.forEach(code => {
     const result = recognizer.validateCardNumber(code);
     console.log(`  ${code} -> ${result.isValid ? '✓' : '✗'} ${result.formatted || result.error}`);
   });
-  
+
   console.log('\nGenerating training instructions...');
   const instructions = preparer.generateTrainingInstructions();
-  
+
   fs.writeFileSync(
     path.join(__dirname, 'ocr_training_instructions.json'),
     JSON.stringify(instructions, null, 2)
   );
-  
+
   console.log('Training instructions saved to ocr_training_instructions.json');
   console.log('\nNext steps:');
   console.log('1. Run the image scraper to collect card images');

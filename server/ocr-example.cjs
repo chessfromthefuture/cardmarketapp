@@ -5,9 +5,9 @@ const { findOnePieceByCodeOrName } = require('../src/data/onepiece.js');
 async function demonstrateCardRecognition() {
   console.log('One Piece TCG Card Recognition Demo');
   console.log('===================================\n');
-  
+
   const recognizer = new CardNumberRecognizer();
-  
+
   // Test cases with various card codes
   const testCases = [
     'OP01-001',    // Valid main set card
@@ -20,22 +20,22 @@ async function demonstrateCardRecognition() {
     'invalid',     // Invalid
     'OP01-999',    // Valid format but might not exist
   ];
-  
+
   console.log('Testing card number recognition:');
   console.log('--------------------------------');
-  
+
   for (const testCode of testCases) {
     console.log(`\nTesting: "${testCode}"`);
-    
+
     // Step 1: Extract and validate card number
     const extracted = recognizer.extractCardNumber(testCode);
     console.log(`  Extracted: ${extracted.fullCode}`);
     console.log(`  Valid: ${extracted.isValid ? '✓' : '✗'}`);
-    
+
     if (extracted.isValid) {
       // Step 2: Find card in database
       const cardMatch = recognizer.findCardByCode(extracted.fullCode);
-      
+
       if (cardMatch.found) {
         console.log(`  Found: ${cardMatch.card.name}`);
         console.log(`  Expansion: ${cardMatch.card.cm_expansion}`);
@@ -47,27 +47,27 @@ async function demonstrateCardRecognition() {
       console.log(`  Error: ${extracted.error}`);
     }
   }
-  
+
   // Demonstrate batch processing
   console.log('\n\nBatch Processing Demo:');
   console.log('----------------------');
-  
+
   const sampleImages = [
     'OP01-001.jpg',
     'ST01-002.png',
     'OP02-121.webp',
     'invalid-image.jpg'
   ];
-  
+
   console.log('Processing sample images:');
   for (const image of sampleImages) {
     console.log(`\nProcessing: ${image}`);
     const result = await recognizer.processImageForCardNumber(image);
-    
+
     if (result.success) {
       console.log(`  ✓ Recognized: ${result.cardCode}`);
       console.log(`  Confidence: ${(result.confidence * 100).toFixed(1)}%`);
-      
+
       const cardMatch = recognizer.findCardByCode(result.cardCode);
       if (cardMatch.found) {
         console.log(`  Card: ${cardMatch.card.name}`);
@@ -76,11 +76,11 @@ async function demonstrateCardRecognition() {
       console.log(`  ✗ Failed: ${result.error || 'Unknown error'}`);
     }
   }
-  
+
   // Generate training data example
   console.log('\n\nTraining Data Generation:');
   console.log('-------------------------');
-  
+
   const trainingData = recognizer.generateTrainingData(sampleImages);
   console.log(`Generated training data for ${trainingData.annotations.length} images`);
   console.log('Sample annotation:');
@@ -93,20 +93,20 @@ async function demonstrateCardRecognition() {
 function demonstrateIntegration() {
   console.log('\n\nIntegration with Existing System:');
   console.log('==================================');
-  
+
   const recognizer = new CardNumberRecognizer();
-  
+
   // Simulate processing an uploaded image
   function processUploadedCard(imagePath, filename) {
     console.log(`\nProcessing uploaded card: ${filename}`);
-    
+
     // Extract card code from filename (common pattern)
     const cardCode = recognizer.extractCardNumber(filename);
-    
+
     if (cardCode.isValid) {
       // Find card in database
       const cardMatch = recognizer.findCardByCode(cardCode.fullCode);
-      
+
       if (cardMatch.found) {
         return {
           success: true,
@@ -130,7 +130,7 @@ function demonstrateIntegration() {
       };
     }
   }
-  
+
   // Test with various filenames
   const testFiles = [
     'OP01-001.jpg',
@@ -138,7 +138,7 @@ function demonstrateIntegration() {
     'invalid_format.jpg',
     'OP02-121_Edward_Newgate.webp'
   ];
-  
+
   testFiles.forEach(filename => {
     const result = processUploadedCard(`/uploads/${filename}`, filename);
     console.log(`\nFile: ${filename}`);
@@ -158,22 +158,22 @@ function demonstrateIntegration() {
 function performanceTest() {
   console.log('\n\nPerformance Test:');
   console.log('=================');
-  
+
   const recognizer = new CardNumberRecognizer();
   const iterations = 1000;
-  
+
   console.log(`Testing ${iterations} card number extractions...`);
-  
+
   const startTime = Date.now();
-  
+
   for (let i = 0; i < iterations; i++) {
     const testCode = `OP${String(Math.floor(Math.random() * 12) + 1).padStart(2, '0')}-${String(Math.floor(Math.random() * 121) + 1).padStart(3, '0')}`;
     recognizer.extractCardNumber(testCode);
   }
-  
+
   const endTime = Date.now();
   const duration = endTime - startTime;
-  
+
   console.log(`Completed ${iterations} extractions in ${duration}ms`);
   console.log(`Average time per extraction: ${(duration / iterations).toFixed(2)}ms`);
   console.log(`Throughput: ${Math.round(iterations / (duration / 1000))} extractions/second`);
@@ -185,7 +185,7 @@ if (require.main === module) {
     .then(() => {
       demonstrateIntegration();
       performanceTest();
-      
+
       console.log('\n\nNext Steps:');
       console.log('===========');
       console.log('1. Run "npm run scrape:cards" to collect training images');

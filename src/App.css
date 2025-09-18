@@ -16,7 +16,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: 
+  background:
     radial-gradient(circle at 20% 80%, rgba(255, 193, 7, 0.1) 0%, transparent 50%),
     radial-gradient(circle at 80% 20%, rgba(25, 118, 210, 0.1) 0%, transparent 50%),
     radial-gradient(circle at 40% 40%, rgba(255, 87, 34, 0.05) 0%, transparent 50%);
@@ -32,7 +32,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: 
+  background-image:
     /* Luffy - Top Left */
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext x='50' y='50' font-size='60' text-anchor='middle' fill='%23FFC107' opacity='0.1'%3E🏴‍☠️%3C/text%3E%3C/svg%3E"),
     /* Zoro - Top Right */
@@ -43,7 +43,7 @@
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext x='50' y='50' font-size='60' text-anchor='middle' fill='%23D32F2F' opacity='0.08'%3E🍴%3C/text%3E%3C/svg%3E"),
     /* Chopper - Center */
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext x='50' y='50' font-size='60' text-anchor='middle' fill='%23FF5722' opacity='0.06'%3E🦌%3C/text%3E%3C/svg%3E");
-  background-position: 
+  background-position:
     10% 10%,  /* Luffy */
     90% 10%,  /* Zoro */
     10% 90%,  /* Nami */
@@ -74,8 +74,159 @@
 /* Header Section */
 .app-header {
   text-align: center;
-  margin-bottom: var(--spacing-2xl);
+  margin-bottom: var(--spacing-xl);
   position: relative;
+}
+
+/* Tool Navigation */
+.tool-navigation {
+  margin-bottom: var(--spacing-xl);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-sm);
+  box-shadow: var(--shadow-md);
+}
+
+.nav-tabs {
+  display: flex;
+  gap: var(--spacing-sm);
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.nav-tab {
+  background: transparent;
+  border: 2px solid var(--medium-gray);
+  color: var(--dark-gray);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border-radius: var(--radius-md);
+  font-weight: var(--font-weight-medium);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.nav-tab:hover {
+  border-color: var(--accent-blue);
+  color: var(--accent-blue);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.nav-tab.active {
+  background: var(--gradient-primary);
+  border-color: var(--primary-red);
+  color: var(--white);
+  box-shadow: var(--shadow-md);
+}
+
+.nav-tab.active:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Tool Sections */
+.tool-section {
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* Modal Styles */
+.card-detection-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-lg);
+}
+
+.modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px);
+}
+
+.modal-content {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-50px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-lg);
+  border-bottom: 1px solid var(--light-gray);
+  background: var(--gradient-primary);
+  color: var(--white);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+.modal-header h3 {
+  margin: 0;
+  color: var(--white);
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: var(--white);
+  cursor: pointer;
+  padding: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.modal-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: rotate(90deg);
+}
+
+.modal-footer {
+  padding: var(--spacing-lg);
+  border-top: 1px solid var(--light-gray);
+  display: flex;
+  gap: var(--spacing-md);
+  justify-content: flex-end;
+  background: var(--light-gray);
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
 }
 
 .app-title {
@@ -426,6 +577,21 @@
     font-size: 2rem;
   }
 
+  .nav-tabs {
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  .nav-tab {
+    text-align: center;
+    font-size: 0.9rem;
+  }
+
+  .tool-navigation {
+    position: relative;
+    margin-bottom: var(--spacing-lg);
+  }
+
   .admin-controls {
     flex-direction: column;
     align-items: stretch;
@@ -459,6 +625,15 @@
   .inventory-actions {
     flex-direction: column;
   }
+
+  .modal-content {
+    margin: var(--spacing-sm);
+    max-height: 95vh;
+  }
+
+  .modal-footer {
+    flex-direction: column;
+  }
 }
 
 @media (max-width: 480px) {
@@ -470,6 +645,11 @@
     font-size: 1.5rem;
   }
 
+  .nav-tab {
+    padding: var(--spacing-xs) var(--spacing-md);
+    font-size: 0.8rem;
+  }
+
   .card,
   .admin-panel,
   .sample-cards,
@@ -479,6 +659,100 @@
   .inventory-section {
     padding: var(--spacing-md);
   }
+
+  .modal-content {
+    margin: var(--spacing-xs);
+    max-height: 98vh;
+  }
+
+  .modal-header {
+    padding: var(--spacing-md);
+  }
+
+  .modal-footer {
+    padding: var(--spacing-md);
+  }
+}
+
+/* Additional One Piece Character Effects */
+.character-float {
+  animation: character-float 20s ease-in-out infinite;
+}
+
+/* Straw Hat Crew Background Elements */
+.straw-hat-crew {
+  position: relative;
+}
+
+.straw-hat-crew::before {
+  content: '🏴‍☠️';
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  font-size: 2rem;
+  opacity: 0.1;
+  animation: float 4s ease-in-out infinite;
+}
+
+/* Zoro Sword Effect */
+.zoro-swords {
+  position: relative;
+}
+
+.zoro-swords::after {
+  content: '⚔️';
+  position: absolute;
+  bottom: -10px;
+  left: -10px;
+  font-size: 1.5rem;
+  opacity: 0.1;
+  animation: wave 3s ease-in-out infinite;
+}
+
+/* Nami Navigation */
+.nami-navigation {
+  position: relative;
+}
+
+.nami-navigation::before {
+  content: '🧭';
+  position: absolute;
+  top: 50%;
+  right: -30px;
+  transform: translateY(-50%);
+  font-size: 1.5rem;
+  opacity: 0.1;
+  animation: wave 2s ease-in-out infinite;
+}
+
+/* Sanji Cooking */
+.sanji-cooking {
+  position: relative;
+}
+
+.sanji-cooking::after {
+  content: '🍴';
+  position: absolute;
+  top: -15px;
+  left: -15px;
+  font-size: 1.2rem;
+  opacity: 0.1;
+  animation: sparkle 2.5s ease-in-out infinite;
+}
+
+/* Chopper Medical */
+.chopper-medical {
+  position: relative;
+}
+
+.chopper-medical::before {
+  content: '🦌';
+  position: absolute;
+  bottom: -20px;
+  right: -20px;
+  font-size: 1.8rem;
+  opacity: 0.1;
+  animation: treasure-load 3s ease-in-out infinite;
 }
 
 /* Animation Classes */

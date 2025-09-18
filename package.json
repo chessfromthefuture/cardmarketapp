@@ -11,7 +11,9 @@
     "server": "node server/index.cjs",
     "dev:all": "concurrently -n WEB,API -c green,cyan \"vite\" \"node server/index.cjs\"",
     "scrape:cards": "node server/card-image-scraper.cjs",
-    "test:ocr": "node server/card-ocr.cjs"
+    "test:ocr": "node server/card-ocr.cjs",
+    "start": "node server/index.cjs",
+    "postbuild": "echo 'Build completed successfully!'"
   },
   "dependencies": {
     "concurrently": "^9.2.1",

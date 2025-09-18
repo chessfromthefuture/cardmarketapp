@@ -11866,7 +11866,7 @@ export function guessOnePieceFromFilename(filename) {
 }
 `;
 fs.writeFileSync('src/data/onepiece.js', jsContent);
-console.log('Fixed onepiece.js with', data.length, 'cards');
+console.log('Updated onepiece.js with', data.length, 'cards from all expansions');
 "-').toUpperCase();
     const hits = findOnePieceByCodeOrName(code);
     if (hits.length > 0) return hits[0];

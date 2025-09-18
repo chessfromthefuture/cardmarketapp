@@ -7,6 +7,7 @@ require('dotenv').config();
 const { searchProducts, ensureOnePieceGameId } = require('./cardmarket.cjs');
 const { ocrService } = require('./ocr-service.cjs');
 const { CardMatcher } = require('./card-matcher.cjs');
+const { CardNumberRecognizer } = require('./card-ocr.cjs');
 const cron = require('node-cron');
 
 const app = express();
@@ -18,8 +19,9 @@ const upload = multer({ storage: multer.memoryStorage() });
 const DATA_DIR = path.join(__dirname, '..', 'data_cache');
 const ONEPIECE_FILE = path.join(DATA_DIR, 'onepiece.json');
 
-// Initialize card matcher
+// Initialize card matcher and OCR recognizer
 const cardMatcher = new CardMatcher();
+const cardRecognizer = new CardNumberRecognizer();
 
 function ensureDataDir() {
   if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });

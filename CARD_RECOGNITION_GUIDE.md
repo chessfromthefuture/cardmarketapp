@@ -87,23 +87,23 @@ class CardNumberRecognizer:
     def __init__(self):
         self.reader = easyocr.Reader(['en'])
         self.card_pattern = re.compile(r'^(OP|ST|EB)(\d{2})-(\d{3})$')
-    
+
     def extract_card_number(self, image_path):
         # Load and preprocess image
         image = cv2.imread(image_path)
-        
+
         # Crop bottom right region (adjust coordinates as needed)
         height, width = image.shape[:2]
         x = int(width * 0.75)
         y = int(height * 0.85)
         w = int(width * 0.2)
         h = int(height * 0.1)
-        
+
         cropped = image[y:y+h, x:x+w]
-        
+
         # Run OCR
         results = self.reader.readtext(cropped)
-        
+
         # Extract and validate card number
         for (bbox, text, confidence) in results:
             cleaned_text = re.sub(r'[^A-Z0-9-]', '', text.upper())
@@ -113,7 +113,7 @@ class CardNumberRecognizer:
                     'confidence': confidence,
                     'valid': True
                 }
-        
+
         return {'valid': False, 'error': 'No valid card number found'}
 ```
 
@@ -152,7 +152,7 @@ const recognizer = new CardNumberRecognizer();
 // Process uploaded image
 async function processCardImage(imagePath) {
   const result = await recognizer.processImageForCardNumber(imagePath);
-  
+
   if (result.success) {
     const cardMatch = recognizer.findCardByCode(result.cardCode);
     if (cardMatch.found) {
@@ -163,7 +163,7 @@ async function processCardImage(imagePath) {
       };
     }
   }
-  
+
   return { success: false, error: 'Card not recognized' };
 }
 ```

@@ -20,7 +20,7 @@ if (!fs.existsSync(CONFIG.outputDir)) {
 function downloadImage(url, filename) {
   return new Promise((resolve, reject) => {
     const protocol = url.startsWith('https') ? https : http;
-    
+
     const request = protocol.get(url, {
       headers: {
         'User-Agent': CONFIG.userAgent,
@@ -44,7 +44,7 @@ function downloadImage(url, filename) {
         reject(new Error(`Failed to download ${url}: ${response.statusCode}`));
       }
     });
-    
+
     request.on('error', reject);
     request.setTimeout(30000, () => {
       request.destroy();
@@ -57,23 +57,23 @@ function downloadImage(url, filename) {
 // Note: This is a template - actual implementation would need to handle dynamic content
 async function scrapeOfficialWebsite() {
   console.log('Scraping Official One Piece Card Game Website...');
-  
+
   // This would need to be implemented with actual scraping logic
   // For now, we'll create a template structure
   const expansions = [
-    'OP01', 'OP02', 'OP03', 'OP04', 'OP05', 
+    'OP01', 'OP02', 'OP03', 'OP04', 'OP05',
     'OP06', 'OP07', 'OP08', 'OP09', 'OP10', 'OP11', 'OP12'
   ];
-  
+
   const results = [];
-  
+
   for (const expansion of expansions) {
     console.log(`Processing ${expansion}...`);
     // In a real implementation, you would:
     // 1. Navigate to the card list page for each expansion
     // 2. Extract card image URLs and card codes
     // 3. Download images with proper naming
-    
+
     // Placeholder for actual scraping logic
     results.push({
       expansion,
@@ -81,7 +81,7 @@ async function scrapeOfficialWebsite() {
       status: 'placeholder'
     });
   }
-  
+
   return results;
 }
 
@@ -96,7 +96,7 @@ function generateSampleCardUrls() {
     { code: 'ST01-001', name: 'Monkey.D.Luffy', expansion: 'ST01' },
     { code: 'ST01-002', name: 'Usopp', expansion: 'ST01' }
   ];
-  
+
   return sampleCards.map(card => ({
     ...card,
     imageUrl: `https://example.com/cards/${card.code}.jpg`, // Placeholder URL
@@ -108,13 +108,13 @@ function generateSampleCardUrls() {
 async function scrapeCardImages() {
   console.log('Starting One Piece TCG Card Image Scraping...');
   console.log(`Output directory: ${CONFIG.outputDir}`);
-  
+
   try {
     // For demonstration, we'll create a sample structure
     const sampleCards = generateSampleCardUrls();
-    
+
     console.log(`Found ${sampleCards.length} sample cards to process`);
-    
+
     // Create expansion directories
     const expansions = [...new Set(sampleCards.map(card => card.expansion))];
     for (const expansion of expansions) {
@@ -123,7 +123,7 @@ async function scrapeCardImages() {
         fs.mkdirSync(expDir, { recursive: true });
       }
     }
-    
+
     // Create metadata file
     const metadata = {
       scrapedAt: new Date().toISOString(),
@@ -137,17 +137,17 @@ async function scrapeCardImages() {
         localPath: card.localPath
       }))
     };
-    
+
     fs.writeFileSync(
-      path.join(CONFIG.outputDir, 'metadata.json'), 
+      path.join(CONFIG.outputDir, 'metadata.json'),
       JSON.stringify(metadata, null, 2)
     );
-    
+
     console.log('Metadata saved to metadata.json');
     console.log('Note: This is a template. Actual image URLs need to be scraped from the websites.');
-    
+
     return metadata;
-    
+
   } catch (error) {
     console.error('Error during scraping:', error);
     throw error;
@@ -157,7 +157,7 @@ async function scrapeCardImages() {
 // OCR Training Data Preparation
 function prepareOCRTrainingData(metadata) {
   console.log('Preparing OCR training data...');
-  
+
   const trainingData = {
     cardNumberFormat: 'OP##-### or ST##-###',
     cardNumberLocation: 'Bottom right corner',
@@ -178,12 +178,12 @@ function prepareOCRTrainingData(metadata) {
       '5. Validate against known card codes'
     ]
   };
-  
+
   fs.writeFileSync(
     path.join(CONFIG.outputDir, 'ocr_training_guide.json'),
     JSON.stringify(trainingData, null, 2)
   );
-  
+
   console.log('OCR training guide created');
   return trainingData;
 }
