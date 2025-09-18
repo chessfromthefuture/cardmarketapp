@@ -1,42 +1,677 @@
-#root {
-  max-width: 1280px;
+/* App-specific styles that complement the One Piece theme */
+
+.app-container {
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: var(--spacing-xl);
+  min-height: 100vh;
+  background: var(--gradient-ocean);
+  position: relative;
+}
+
+.app-container::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(255, 193, 7, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(25, 118, 210, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(255, 87, 34, 0.05) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* One Piece Character Backgrounds */
+.app-container::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    /* Luffy - Top Left */
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext x='50' y='50' font-size='60' text-anchor='middle' fill='%23FFC107' opacity='0.1'%3E🏴‍☠️%3C/text%3E%3C/svg%3E"),
+    /* Zoro - Top Right */
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext x='50' y='50' font-size='60' text-anchor='middle' fill='%231976D2' opacity='0.08'%3E⚔️%3C/text%3E%3C/svg%3E"),
+    /* Nami - Bottom Left */
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext x='50' y='50' font-size='60' text-anchor='middle' fill='%23FF9800' opacity='0.08'%3E🧭%3C/text%3E%3C/svg%3E"),
+    /* Sanji - Bottom Right */
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext x='50' y='50' font-size='60' text-anchor='middle' fill='%23D32F2F' opacity='0.08'%3E🍴%3C/text%3E%3C/svg%3E"),
+    /* Chopper - Center */
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext x='50' y='50' font-size='60' text-anchor='middle' fill='%23FF5722' opacity='0.06'%3E🦌%3C/text%3E%3C/svg%3E");
+  background-position: 
+    10% 10%,  /* Luffy */
+    90% 10%,  /* Zoro */
+    10% 90%,  /* Nami */
+    90% 90%,  /* Sanji */
+    50% 50%;  /* Chopper */
+  background-size: 200px 200px;
+  background-repeat: no-repeat;
+  pointer-events: none;
+  z-index: -1;
+  animation: character-float 20s ease-in-out infinite;
+}
+
+@keyframes character-float {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-10px) rotate(1deg);
+  }
+  50% {
+    transform: translateY(-5px) rotate(-1deg);
+  }
+  75% {
+    transform: translateY(-15px) rotate(0.5deg);
+  }
+}
+
+/* Header Section */
+.app-header {
   text-align: center;
+  margin-bottom: var(--spacing-2xl);
+  position: relative;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.app-title {
+  font-size: 3rem;
+  font-weight: var(--font-weight-bold);
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: var(--spacing-md);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-@keyframes logo-spin {
+.app-subtitle {
+  font-size: 1.2rem;
+  color: var(--dark-navy);
+  font-weight: var(--font-weight-medium);
+  margin-bottom: var(--spacing-lg);
+}
+
+/* Admin Panel */
+.admin-panel {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
+  box-shadow: var(--shadow-md);
+  border-left: 4px solid var(--accent-orange);
+}
+
+.admin-panel h3 {
+  color: var(--accent-orange);
+  margin-bottom: var(--spacing-md);
+  font-size: 1.3rem;
+}
+
+.admin-controls {
+  display: flex;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.admin-stats {
+  background: var(--light-blue);
+  padding: var(--spacing-md);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--accent-blue);
+  font-size: 0.9rem;
+  color: var(--dark-navy);
+}
+
+/* Sample Cards Section */
+.sample-cards {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
+  box-shadow: var(--shadow-md);
+  border-left: 4px solid var(--accent-yellow);
+}
+
+.sample-cards h3 {
+  color: var(--accent-yellow);
+  margin-bottom: var(--spacing-md);
+  font-size: 1.3rem;
+}
+
+.sample-buttons {
+  display: flex;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
+/* Search Section */
+.search-section {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
+  box-shadow: var(--shadow-md);
+  border-left: 4px solid var(--accent-blue);
+}
+
+.search-section h3 {
+  color: var(--accent-blue);
+  margin-bottom: var(--spacing-md);
+  font-size: 1.3rem;
+}
+
+.search-controls {
+  display: flex;
+  gap: var(--spacing-md);
+  align-items: center;
+  margin-bottom: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
+.search-input {
+  flex: 1;
+  min-width: 300px;
+}
+
+.advanced-search {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-md);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--light-gray);
+}
+
+.search-results {
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid var(--light-gray);
+  border-radius: var(--radius-md);
+  background: var(--light-gray);
+  margin-top: var(--spacing-md);
+}
+
+.search-result-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-md);
+  border-bottom: 1px solid var(--medium-gray);
+  background: var(--white);
+  transition: all 0.3s ease;
+}
+
+.search-result-item:hover {
+  background: var(--light-blue);
+  transform: translateX(4px);
+}
+
+.search-result-item:last-child {
+  border-bottom: none;
+}
+
+.search-result-info h4 {
+  margin: 0 0 var(--spacing-xs) 0;
+  color: var(--dark-navy);
+  font-size: 1rem;
+}
+
+.search-result-meta {
+  font-size: 0.8rem;
+  color: var(--dark-gray);
+}
+
+/* Upload Section */
+.upload-section {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+  margin-bottom: var(--spacing-xl);
+  box-shadow: var(--shadow-md);
+  border: 2px dashed var(--accent-blue);
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.upload-section:hover {
+  border-color: var(--primary-red);
+  background: var(--cream);
+}
+
+.upload-section h3 {
+  color: var(--accent-blue);
+  margin-bottom: var(--spacing-md);
+  font-size: 1.3rem;
+}
+
+.file-input-wrapper {
+  position: relative;
+  display: inline-block;
+  margin-bottom: var(--spacing-lg);
+}
+
+.file-input {
+  position: absolute;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+
+.file-input-label {
+  display: inline-block;
+  padding: var(--spacing-lg) var(--spacing-xl);
+  background: var(--gradient-primary);
+  color: var(--white);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: var(--font-weight-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.file-input-label:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.image-preview {
+  margin: var(--spacing-lg) 0;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  display: inline-block;
+}
+
+.image-preview img {
+  max-width: 300px;
+  max-height: 200px;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+/* Card Detection Section */
+.card-detection {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+  margin-bottom: var(--spacing-xl);
+  box-shadow: var(--shadow-md);
+  border-left: 4px solid var(--primary-red);
+}
+
+.card-detection h3 {
+  color: var(--primary-red);
+  margin-bottom: var(--spacing-md);
+  font-size: 1.3rem;
+}
+
+.detection-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-weight: var(--font-weight-medium);
+  color: var(--dark-navy);
+  margin-bottom: var(--spacing-xs);
+  font-size: 0.9rem;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  margin-bottom: var(--spacing-sm);
+}
+
+.form-row {
+  display: flex;
+  gap: var(--spacing-md);
+  align-items: end;
+}
+
+.form-row .form-group {
+  flex: 1;
+}
+
+/* Inventory Section */
+.inventory-section {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+  margin-bottom: var(--spacing-xl);
+  box-shadow: var(--shadow-md);
+  border-left: 4px solid var(--gold);
+}
+
+.inventory-section h3 {
+  color: var(--gold);
+  margin-bottom: var(--spacing-md);
+  font-size: 1.3rem;
+}
+
+.inventory-empty {
+  text-align: center;
+  padding: var(--spacing-2xl);
+  color: var(--dark-gray);
+  font-style: italic;
+}
+
+.inventory-table {
+  margin: var(--spacing-lg) 0;
+  overflow-x: auto;
+}
+
+.inventory-actions {
+  display: flex;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-lg);
+  flex-wrap: wrap;
+}
+
+/* Loading States */
+.loading-spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--light-gray);
+  border-radius: 50%;
+  border-top-color: var(--accent-blue);
+  animation: spin 1s ease-in-out infinite;
+  margin-right: var(--spacing-sm);
+}
+
+/* Error States */
+.error-message {
+  background: #ffebee;
+  color: #c62828;
+  padding: var(--spacing-md);
+  border-radius: var(--radius-md);
+  border-left: 4px solid #f44336;
+  margin: var(--spacing-md) 0;
+}
+
+/* Success States */
+.success-message {
+  background: #e8f5e8;
+  color: #2e7d32;
+  padding: var(--spacing-md);
+  border-radius: var(--radius-md);
+  border-left: 4px solid #4caf50;
+  margin: var(--spacing-md) 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .app-container {
+    padding: var(--spacing-md);
+  }
+
+  .app-title {
+    font-size: 2rem;
+  }
+
+  .admin-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .sample-buttons {
+    flex-direction: column;
+  }
+
+  .search-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-input {
+    min-width: auto;
+  }
+
+  .advanced-search {
+    grid-template-columns: 1fr;
+  }
+
+  .detection-form {
+    grid-template-columns: 1fr;
+  }
+
+  .form-row {
+    flex-direction: column;
+  }
+
+  .inventory-actions {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 480px) {
+  .app-container {
+    padding: var(--spacing-sm);
+  }
+
+  .app-title {
+    font-size: 1.5rem;
+  }
+
+  .card,
+  .admin-panel,
+  .sample-cards,
+  .search-section,
+  .upload-section,
+  .card-detection,
+  .inventory-section {
+    padding: var(--spacing-md);
+  }
+}
+
+/* Animation Classes */
+.fade-in {
+  animation: fadeIn 0.5s ease-out;
+}
+
+.slide-in-left {
+  animation: slideInLeft 0.5s ease-out;
+}
+
+.slide-in-right {
+  animation: slideInRight 0.5s ease-out;
+}
+
+@keyframes slideInLeft {
   from {
-    transform: rotate(0deg);
+    opacity: 0;
+    transform: translateX(-30px);
   }
   to {
-    transform: rotate(360deg);
+    opacity: 1;
+    transform: translateX(0);
   }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
   }
 }
 
-.card {
-  padding: 2em;
+/* One Piece Themed Decorative Elements */
+.pirate-ship {
+  position: relative;
 }
 
-.read-the-docs {
-  color: #888;
+.pirate-ship::before {
+  content: '⚓';
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  font-size: 1.5rem;
+  color: var(--accent-yellow);
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.treasure-chest {
+  position: relative;
+}
+
+.treasure-chest::after {
+  content: '💰';
+  position: absolute;
+  bottom: -5px;
+  left: -5px;
+  font-size: 1.2rem;
+  animation: sparkle 2s ease-in-out infinite;
+}
+
+@keyframes sparkle {
+  0%, 100% {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+}
+
+/* Additional One Piece themed animations */
+@keyframes wave {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(5deg);
+  }
+  75% {
+    transform: rotate(-5deg);
+  }
+}
+
+@keyframes treasure-glow {
+  0%, 100% {
+    box-shadow: 0 0 5px var(--accent-yellow);
+  }
+  50% {
+    box-shadow: 0 0 20px var(--accent-yellow), 0 0 30px var(--accent-orange);
+  }
+}
+
+.treasure-glow {
+  animation: treasure-glow 2s ease-in-out infinite;
+}
+
+/* Card hover effects */
+.card:hover .straw-hat {
+  color: var(--accent-yellow);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.card:hover .pirate-flag {
+  color: var(--primary-red);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Ocean wave effect for backgrounds */
+.ocean-wave-bg {
+  background: linear-gradient(45deg,
+    var(--accent-blue) 0%,
+    var(--light-blue) 25%,
+    var(--accent-blue) 50%,
+    var(--light-blue) 75%,
+    var(--accent-blue) 100%);
+  background-size: 400% 400%;
+  animation: ocean-flow 8s ease-in-out infinite;
+}
+
+@keyframes ocean-flow {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* Pirate flag animation */
+@keyframes flag-wave {
+  0%, 100% {
+    transform: rotate(0deg) scale(1);
+  }
+  25% {
+    transform: rotate(2deg) scale(1.05);
+  }
+  75% {
+    transform: rotate(-2deg) scale(1.05);
+  }
+}
+
+.flag-wave {
+  animation: flag-wave 3s ease-in-out infinite;
+}
+
+/* Treasure chest opening effect */
+@keyframes chest-open {
+  0% {
+    transform: scale(1) rotate(0deg);
+  }
+  50% {
+    transform: scale(1.1) rotate(2deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+.chest-open {
+  animation: chest-open 0.6s ease-in-out;
+}
+
+/* Loading treasure animation */
+@keyframes treasure-load {
+  0% {
+    transform: translateY(0px) rotate(0deg);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(-20px) rotate(180deg);
+    opacity: 0.7;
+  }
+  100% {
+    transform: translateY(0px) rotate(360deg);
+    opacity: 1;
+  }
+}
+
+.treasure-load {
+  animation: treasure-load 1.5s ease-in-out infinite;
 }

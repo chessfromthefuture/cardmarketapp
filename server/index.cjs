@@ -5,6 +5,8 @@ const path = require('path');
 const fs = require('fs');
 require('dotenv').config();
 const { searchProducts, ensureOnePieceGameId } = require('./cardmarket.cjs');
+const { ocrService } = require('./ocr-service.cjs');
+const { CardMatcher } = require('./card-matcher.cjs');
 const cron = require('node-cron');
 
 const app = express();
@@ -15,6 +17,9 @@ const upload = multer({ storage: multer.memoryStorage() });
 
 const DATA_DIR = path.join(__dirname, '..', 'data_cache');
 const ONEPIECE_FILE = path.join(DATA_DIR, 'onepiece.json');
+
+// Initialize card matcher
+const cardMatcher = new CardMatcher();
 
 function ensureDataDir() {
   if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
@@ -91,6 +96,7 @@ app.post('/api/refresh-onepiece', async (req, res) => {
     }
     const items = Array.from(map.values());
     writeOnePieceCache(items);
+    cardMatcher.refreshCards(); // Refresh the card matcher with new data
     res.json({ saved: items.length });
   } catch (err) {
     console.error(err);
@@ -121,6 +127,7 @@ app.post('/api/import-onepiece', upload.single('file'), async (req, res) => {
       };
     }).filter(x => x.card_code || x.name);
     writeOnePieceCache(items);
+    cardMatcher.refreshCards(); // Refresh the card matcher with new data
     res.json({ saved: items.length });
   } catch (err) {
     console.error(err);
@@ -147,6 +154,7 @@ app.post('/api/import-onepiece-url', async (req, res) => {
       rarity: p.rarity || '',
     })).filter(x => x.card_code || x.name);
     writeOnePieceCache(items);
+    cardMatcher.refreshCards(); // Refresh the card matcher with new data
     res.json({ saved: items.length });
   } catch (err) {
     console.error(err);
@@ -185,6 +193,7 @@ app.post('/api/import-tcgcsv', upload.single('file'), async (req, res) => {
     }
     const merged = mergePrices(items, priceMap);
     writeOnePieceCache(merged);
+    cardMatcher.refreshCards(); // Refresh the card matcher with new data
     res.json({ saved: merged.length, priced: Object.keys(priceMap).length });
   } catch (err) {
     console.error(err);
@@ -220,6 +229,7 @@ app.post('/api/import-tcgcsv-url', async (req, res) => {
     }
     const merged = mergePrices(items, priceMap);
     writeOnePieceCache(merged);
+    cardMatcher.refreshCards(); // Refresh the card matcher with new data
     res.json({ saved: merged.length, priced: Object.keys(priceMap).length });
   } catch (err) {
     console.error(err);
@@ -341,8 +351,65 @@ app.get('/api/search', async (req, res) => {
 });
 
 app.post('/api/identify', upload.single('file'), async (req, res) => {
-  const filename = req.file?.originalname || '';
-  res.json({ name: 'Unknown', card_code: '', cm_expansion: '', cm_idProduct: '', cm_idExpansion: '', confidence: 0.5, raw_text: filename });
+  try {
+    if (!req.file || !req.file.buffer) {
+      return res.status(400).json({ error: 'No file provided' });
+    }
+
+    console.log(`Processing image: ${req.file.originalname} (${req.file.size} bytes)`);
+
+    // Extract text using OCR
+    const ocrResult = await ocrService.extractText(req.file.buffer);
+    console.log(`OCR extracted text: "${ocrResult.text}" (confidence: ${ocrResult.confidence})`);
+
+    // Find the best matching card
+    const matchedCard = cardMatcher.findBestMatch(ocrResult.text, 0.2); // Lower threshold for better matching
+
+    if (matchedCard) {
+      res.json({
+        name: matchedCard.name,
+        card_code: matchedCard.card_code,
+        cm_expansion: matchedCard.cm_expansion,
+        cm_idProduct: matchedCard.cm_idProduct,
+        cm_idExpansion: matchedCard.cm_idExpansion,
+        rarity: matchedCard.rarity,
+        confidence: Math.min(ocrResult.confidence * matchedCard.matchScore, 0.99),
+        raw_text: ocrResult.rawText,
+        match_score: matchedCard.matchScore,
+        extracted_code: matchedCard.extractedCode,
+        extracted_name: matchedCard.extractedName
+      });
+    } else {
+      // Return OCR result even if no card match found
+      res.json({
+        name: 'Unknown Card',
+        card_code: '',
+        cm_expansion: '',
+        cm_idProduct: '',
+        cm_idExpansion: '',
+        rarity: '',
+        confidence: ocrResult.confidence * 0.5, // Lower confidence for unmatched cards
+        raw_text: ocrResult.rawText,
+        match_score: 0,
+        extracted_code: cardMatcher.extractCardCode(ocrResult.text),
+        extracted_name: cardMatcher.extractCardName(ocrResult.text),
+        error: 'No matching card found in database'
+      });
+    }
+  } catch (error) {
+    console.error('OCR identification failed:', error);
+    res.status(500).json({
+      error: 'OCR processing failed',
+      details: error.message,
+      name: 'Unknown',
+      card_code: '',
+      cm_expansion: '',
+      cm_idProduct: '',
+      cm_idExpansion: '',
+      confidence: 0,
+      raw_text: req.file?.originalname || 'Unknown file'
+    });
+  }
 });
 
 const port = process.env.PORT || 3001;
