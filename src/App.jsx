@@ -283,11 +283,9 @@ function App() {
         <h1 className="app-title">🏴‍☠️ One Piece Card Market</h1>
         <p className="app-subtitle">Discover, Identify, and Manage Your One Piece Trading Card Collection</p>
         <div className="pirate-ship">
-          <p style={{ fontSize: '0.9rem', color: 'var(--dark-navy)', marginTop: '1rem' }}>
-            ⚓ Set sail on your card collecting adventure! ⚓
-          </p>
+          <p>⚓ Set sail on your card collecting adventure! ⚓</p>
         </div>
-        <div className="header-links" style={{ marginTop: '1rem', display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+        <div className="header-links" style={{ marginTop: '2rem', display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
           <a
             href="https://github.com/chessfromthefuture/cardmarketapp"
             target="_blank"
@@ -342,7 +340,7 @@ function App() {
       {/* Search Tab */}
       {activeTab === 'search' && (
         <div className="tool-section">
-          <div className="search-section nami-navigation">
+          <div className="search-section">
             <h3>🔍 Search One Piece Cards</h3>
             <div className="search-controls">
               <input
@@ -424,7 +422,7 @@ function App() {
             )}
           </div>
 
-          <div className="sample-cards straw-hat-crew">
+          <div className="sample-cards">
             <h3>🎴 Quick Samples</h3>
             <div className="sample-buttons">
               <button className="btn-primary" onClick={() => handleLoadSample(0)}>
@@ -444,7 +442,7 @@ function App() {
       {/* Upload Tab */}
       {activeTab === 'upload' && (
         <div className="tool-section">
-          <div className="upload-section zoro-swords">
+          <div className="upload-section">
             <h3>📸 Upload Card Image</h3>
             <div className="file-input-wrapper">
               <input
@@ -497,7 +495,7 @@ function App() {
       {/* Inventory Tab */}
       {activeTab === 'inventory' && (
         <div className="tool-section">
-          <div className="inventory-section chopper-medical">
+          <div className="inventory-section">
             <h3>📚 My Collection ({inventory.length})</h3>
             {inventory.length === 0 ? (
               <div className="inventory-empty">
@@ -562,7 +560,7 @@ function App() {
       {/* Admin Tab */}
       {activeTab === 'admin' && (
         <div className="tool-section">
-          <div className="admin-panel sanji-cooking">
+          <div className="admin-panel">
             <h3>⚙️ Admin Controls</h3>
             <div className="admin-controls">
               <button className="btn-primary" onClick={loadStats}>
@@ -765,16 +763,14 @@ function App() {
         </div>
       )}
       <div className="card" style={{ textAlign: 'center', marginTop: '2rem' }}>
-        <div className="treasure-chest">
-          <h4 className="ocean-wave">💡 Pro Tips</h4>
-          <p>
-            <strong>📸 For best results:</strong> Use clear, well-lit photos with the card centered and flat.
-            <br />
-            <strong>🔍 Search tip:</strong> Try searching by character name, card code, or set name.
-            <br />
-            <strong>⚡ Performance:</strong> This is a local demo - your data stays on your device!
-          </p>
-        </div>
+        <h4>💡 Pro Tips</h4>
+        <p>
+          <strong>📸 For best results:</strong> Use clear, well-lit photos with the card centered and flat.
+          <br />
+          <strong>🔍 Search tip:</strong> Try searching by character name, card code, or set name.
+          <br />
+          <strong>⚡ Performance:</strong> This is a local demo - your data stays on your device!
+        </p>
       </div>
     </div>
   );
