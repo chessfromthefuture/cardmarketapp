@@ -3,6 +3,14 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "homepage": "https://cardmarketapp.vercel.app",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chessfromthefuture/cardmarketapp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/chessfromthefuture/cardmarketapp/issues"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -13,7 +21,10 @@
     "scrape:cards": "node server/card-image-scraper.cjs",
     "test:ocr": "node server/card-ocr.cjs",
     "start": "node server/index.cjs",
-    "postbuild": "echo 'Build completed successfully!'"
+    "postbuild": "echo 'Build completed successfully!'",
+    "install:backend": "npm install --only=production --ignore-scripts",
+    "railway:build": "echo 'Skipping frontend build for Railway'",
+    "railway:start": "node server/index.cjs"
   },
   "dependencies": {
     "concurrently": "^9.2.1",

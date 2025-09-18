@@ -5,10 +5,28 @@ const path = require('path');
 const fs = require('fs');
 require('dotenv').config();
 const { searchProducts, ensureOnePieceGameId } = require('./cardmarket.cjs');
-const { ocrService } = require('./ocr-service.cjs');
-const { CardMatcher } = require('./card-matcher.cjs');
-const { CardNumberRecognizer } = require('./card-ocr.cjs');
 const cron = require('node-cron');
+
+// Optional dependencies - handle gracefully if not available
+let ocrService, CardMatcher, CardNumberRecognizer;
+try {
+  ocrService = require('./ocr-service.cjs').ocrService;
+  CardMatcher = require('./card-matcher.cjs').CardMatcher;
+  CardNumberRecognizer = require('./card-ocr.cjs').CardNumberRecognizer;
+} catch (error) {
+  console.warn('Optional dependencies not available:', error.message);
+  // Create mock services for basic functionality
+  ocrService = {
+    extractText: async () => ({ text: '', confidence: 0, rawText: '' })
+  };
+  CardMatcher = class {
+    constructor() { this.cards = []; }
+    refreshCards() {}
+    findBestMatch() { return null; }
+    extractCardCode() { return ''; }
+    extractCardName() { return ''; }
+  };
+}
 
 const app = express();
 app.use(cors());
@@ -352,6 +370,57 @@ app.get('/api/search', async (req, res) => {
   }
 });
 
+// New endpoint for card number recognition
+app.post('/api/recognize-card-number', upload.single('file'), async (req, res) => {
+  try {
+    if (!req.file || !req.file.buffer) {
+      return res.status(400).json({ error: 'No file provided' });
+    }
+
+    console.log(`Processing card image: ${req.file.originalname} (${req.file.size} bytes)`);
+
+    // Process image for card number recognition
+    const result = await cardRecognizer.processImageForCardNumber(req.file.originalname);
+
+    if (result.success) {
+      // Find card in database
+      const cardMatch = cardRecognizer.findCardByCode(result.cardCode);
+
+      if (cardMatch.found) {
+        res.json({
+          success: true,
+          card: cardMatch.card,
+          card_code: result.cardCode,
+          confidence: result.confidence,
+          method: 'card_number_recognition',
+          extracted: result.extracted
+        });
+      } else {
+        res.json({
+          success: false,
+          card_code: result.cardCode,
+          confidence: result.confidence,
+          error: 'Card code recognized but not found in database',
+          extracted: result.extracted
+        });
+      }
+    } else {
+      res.json({
+        success: false,
+        error: result.error || 'Failed to recognize card number',
+        confidence: 0
+      });
+    }
+  } catch (error) {
+    console.error('Card number recognition failed:', error);
+    res.status(500).json({
+      error: 'Card number recognition failed',
+      details: error.message,
+      success: false
+    });
+  }
+});
+
 app.post('/api/identify', upload.single('file'), async (req, res) => {
   try {
     if (!req.file || !req.file.buffer) {
@@ -360,12 +429,35 @@ app.post('/api/identify', upload.single('file'), async (req, res) => {
 
     console.log(`Processing image: ${req.file.originalname} (${req.file.size} bytes)`);
 
-    // Extract text using OCR
+    // Try card number recognition first (faster and more accurate)
+    const cardNumberResult = await cardRecognizer.processImageForCardNumber(req.file.originalname);
+
+    if (cardNumberResult.success) {
+      const cardMatch = cardRecognizer.findCardByCode(cardNumberResult.cardCode);
+
+      if (cardMatch.found) {
+        return res.json({
+          name: cardMatch.card.name,
+          card_code: cardMatch.card.card_code,
+          cm_expansion: cardMatch.card.cm_expansion,
+          cm_idProduct: cardMatch.card.cm_idProduct,
+          cm_idExpansion: cardMatch.card.cm_idExpansion,
+          rarity: cardMatch.card.rarity,
+          confidence: cardNumberResult.confidence,
+          method: 'card_number_recognition',
+          raw_text: cardNumberResult.cardCode,
+          extracted_code: cardNumberResult.cardCode,
+          success: true
+        });
+      }
+    }
+
+    // Fallback to OCR text extraction
     const ocrResult = await ocrService.extractText(req.file.buffer);
     console.log(`OCR extracted text: "${ocrResult.text}" (confidence: ${ocrResult.confidence})`);
 
     // Find the best matching card
-    const matchedCard = cardMatcher.findBestMatch(ocrResult.text, 0.2); // Lower threshold for better matching
+    const matchedCard = cardMatcher.findBestMatch(ocrResult.text, 0.2);
 
     if (matchedCard) {
       res.json({
@@ -376,10 +468,12 @@ app.post('/api/identify', upload.single('file'), async (req, res) => {
         cm_idExpansion: matchedCard.cm_idExpansion,
         rarity: matchedCard.rarity,
         confidence: Math.min(ocrResult.confidence * matchedCard.matchScore, 0.99),
+        method: 'ocr_text_matching',
         raw_text: ocrResult.rawText,
         match_score: matchedCard.matchScore,
         extracted_code: matchedCard.extractedCode,
-        extracted_name: matchedCard.extractedName
+        extracted_name: matchedCard.extractedName,
+        success: true
       });
     } else {
       // Return OCR result even if no card match found
@@ -390,18 +484,20 @@ app.post('/api/identify', upload.single('file'), async (req, res) => {
         cm_idProduct: '',
         cm_idExpansion: '',
         rarity: '',
-        confidence: ocrResult.confidence * 0.5, // Lower confidence for unmatched cards
+        confidence: ocrResult.confidence * 0.5,
+        method: 'ocr_text_matching',
         raw_text: ocrResult.rawText,
         match_score: 0,
         extracted_code: cardMatcher.extractCardCode(ocrResult.text),
         extracted_name: cardMatcher.extractCardName(ocrResult.text),
-        error: 'No matching card found in database'
+        error: 'No matching card found in database',
+        success: false
       });
     }
   } catch (error) {
-    console.error('OCR identification failed:', error);
+    console.error('Card identification failed:', error);
     res.status(500).json({
-      error: 'OCR processing failed',
+      error: 'Card identification failed',
       details: error.message,
       name: 'Unknown',
       card_code: '',
@@ -409,7 +505,8 @@ app.post('/api/identify', upload.single('file'), async (req, res) => {
       cm_idProduct: '',
       cm_idExpansion: '',
       confidence: 0,
-      raw_text: req.file?.originalname || 'Unknown file'
+      raw_text: req.file?.originalname || 'Unknown file',
+      success: false
     });
   }
 });

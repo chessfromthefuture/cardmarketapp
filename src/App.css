@@ -401,6 +401,21 @@
   font-size: 1.3rem;
 }
 
+.upload-buttons {
+  display: flex;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: var(--spacing-lg);
+}
+
+.upload-buttons .btn-primary,
+.upload-buttons .btn-secondary {
+  flex: 1;
+  min-width: 200px;
+  text-align: center;
+}
+
 .file-input-wrapper {
   position: relative;
   display: inline-block;

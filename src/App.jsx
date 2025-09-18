@@ -91,6 +91,47 @@ function App() {
     }
   }
 
+  async function handleCardNumberRecognition() {
+    if (!selectedFile) return;
+    setResult({ loading: true });
+    try {
+      const formData = new FormData();
+      formData.append("file", selectedFile);
+      const res = await fetch(`${API_BASE}/api/recognize-card-number`, { method: "POST", body: formData });
+      const data = await res.json();
+
+      if (data.success && data.card) {
+        setResult({
+          ...data.card,
+          language: 1,
+          condition: "Near Mint",
+          notes: "",
+          confidence: data.confidence,
+          method: data.method,
+          raw_text: data.card_code
+        });
+      } else {
+        setResult({
+          error: data.error || 'Card number recognition failed',
+          language: 1,
+          condition: "Near Mint",
+          notes: "",
+          confidence: data.confidence || 0,
+          method: 'card_number_recognition'
+        });
+      }
+    } catch (e) {
+      setResult({
+        error: e.message,
+        language: 1,
+        condition: "Near Mint",
+        notes: "",
+        confidence: 0,
+        method: 'card_number_recognition'
+      });
+    }
+  }
+
   function handleLoadSample(i) {
     const idx = typeof i === "number" ? i % sampleCards.length : 0;
     const data = sampleCards[idx];
@@ -245,6 +286,26 @@ function App() {
           <p style={{ fontSize: '0.9rem', color: 'var(--dark-navy)', marginTop: '1rem' }}>
             ⚓ Set sail on your card collecting adventure! ⚓
           </p>
+        </div>
+        <div className="header-links" style={{ marginTop: '1rem', display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+          <a
+            href="https://github.com/chessfromthefuture/cardmarketapp"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-secondary"
+            style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
+          >
+            📂 View on GitHub
+          </a>
+          <a
+            href="https://cardmarketapp.vercel.app"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-primary"
+            style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
+          >
+            🌐 Live Demo
+          </a>
         </div>
       </div>
 
@@ -405,17 +466,30 @@ function App() {
                 />
               </div>
             )}
-            <button
-              className="btn-primary btn-lg"
-              onClick={handleIdentify}
-              disabled={!selectedFile || (result && result.loading)}
-            >
-              {result && result.loading ? (
-                <span className="loading-spinner">Identifying...</span>
-              ) : (
-                '🔍 Identify Card'
-              )}
-            </button>
+            <div className="upload-buttons">
+              <button
+                className="btn-primary btn-lg"
+                onClick={handleIdentify}
+                disabled={!selectedFile || (result && result.loading)}
+              >
+                {result && result.loading ? (
+                  <span className="loading-spinner">Identifying...</span>
+                ) : (
+                  '🔍 Identify Card (OCR + Card Number)'
+                )}
+              </button>
+              <button
+                className="btn-secondary btn-lg"
+                onClick={handleCardNumberRecognition}
+                disabled={!selectedFile || (result && result.loading)}
+              >
+                {result && result.loading ? (
+                  <span className="loading-spinner">Recognizing...</span>
+                ) : (
+                  '🎯 Card Number Recognition'
+                )}
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -620,6 +694,16 @@ function App() {
                       placeholder="Detection confidence"
                     />
                   </div>
+                  {result.method && (
+                    <div className="form-group">
+                      <label>Recognition Method</label>
+                      <input
+                        value={result.method === 'card_number_recognition' ? '🎯 Card Number Recognition' : '🔍 OCR Text Matching'}
+                        readOnly
+                        placeholder="Recognition method used"
+                      />
+                    </div>
+                  )}
                   {result.match_score !== undefined && (
                     <div className="form-group">
                       <label>Match Score</label>

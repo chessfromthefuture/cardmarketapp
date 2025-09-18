@@ -1,0 +1,30 @@
+{
+  "name": "cardmarketapp-backend",
+  "version": "1.0.0",
+  "description": "Backend API for One Piece Card Market App",
+  "main": "index.cjs",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node index.cjs",
+    "dev": "node index.cjs"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "csv-parse": "^6.1.0",
+    "dotenv": "^17.2.2",
+    "express": "^5.1.0",
+    "form-data": "^4.0.4",
+    "multer": "^2.0.2",
+    "node-cron": "^4.2.1",
+    "node-fetch": "^3.3.2"
+  },
+  "optionalDependencies": {
+    "sharp": "^0.34.4",
+    "tesseract.js": "^5.1.0",
+    "canvas": "^2.11.2",
+    "jimp": "^0.22.10"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

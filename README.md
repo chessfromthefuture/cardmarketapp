@@ -8,6 +8,8 @@ A full-stack web application for One Piece trading card collectors to identify, 
 ![React](https://img.shields.io/badge/React-18.3.1-blue?style=for-the-badge&logo=react)
 ![Node.js](https://img.shields.io/badge/Node.js-Express-green?style=for-the-badge&logo=node.js)
 ![AI/OCR](https://img.shields.io/badge/AI-OCR-purple?style=for-the-badge&logo=tensorflow)
+[![CI](https://github.com/chessfromthefuture/cardmarketapp/actions/workflows/ci.yml/badge.svg)](https://github.com/chessfromthefuture/cardmarketapp/actions/workflows/ci.yml)
+[![Deploy](https://github.com/chessfromthefuture/cardmarketapp/actions/workflows/deploy.yml/badge.svg)](https://github.com/chessfromthefuture/cardmarketapp/actions/workflows/deploy.yml)
 
 ## ✨ Features
 
@@ -80,7 +82,7 @@ A full-stack web application for One Piece trading card collectors to identify, 
 ## 🚀 Quick Start
 
 ### **Prerequisites**
-- Node.js 16+ 
+- Node.js 16+
 - npm or yarn
 - Git
 

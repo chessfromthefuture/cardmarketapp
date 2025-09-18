@@ -1,0 +1,57 @@
+{
+  "title": "One Piece TCG Card Number Recognition Training",
+  "steps": [
+    {
+      "step": 1,
+      "title": "Data Collection",
+      "description": "Collect high-resolution card images from official sources",
+      "sources": [
+        "en.onepiece-cardgame.com/cardlist/",
+        "sabatcg.com/op01-op20-one-piece-card-gallery",
+        "onepiece.gg/cards/"
+      ]
+    },
+    {
+      "step": 2,
+      "title": "Image Preprocessing",
+      "description": "Crop card number regions and enhance for OCR",
+      "tools": [
+        "OpenCV",
+        "PIL/Pillow",
+        "ImageMagick"
+      ]
+    },
+    {
+      "step": 3,
+      "title": "OCR Model Training",
+      "description": "Train OCR model on card number patterns",
+      "options": [
+        "Tesseract OCR with custom training",
+        "EasyOCR for better accuracy",
+        "PaddleOCR for Chinese/Japanese text",
+        "Custom CNN for card-specific patterns"
+      ]
+    },
+    {
+      "step": 4,
+      "title": "Validation and Testing",
+      "description": "Test model accuracy against known card codes",
+      "metrics": [
+        "Precision",
+        "Recall",
+        "F1-Score",
+        "Character Accuracy"
+      ]
+    }
+  ],
+  "technicalRequirements": {
+    "libraries": [
+      "opencv-python",
+      "pytesseract",
+      "easyocr",
+      "paddleocr"
+    ],
+    "hardware": "GPU recommended for training",
+    "datasetSize": "Minimum 1000+ card images recommended"
+  }
+}

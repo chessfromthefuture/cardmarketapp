@@ -1,0 +1,18 @@
+# Railway-specific Dockerfile for backend only
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Copy only server files and package.json
+COPY server/ ./server/
+COPY package.json ./
+COPY data_cache/ ./data_cache/
+
+# Install only production dependencies
+RUN npm install --only=production --ignore-scripts
+
+# Expose port
+EXPOSE 3001
+
+# Start the server
+CMD ["node", "server/index.cjs"]
